@@ -33,7 +33,11 @@ namespace WeatherWS
                 wObject.coord.lat + "." + wObject.coord.lon + ")");
 
             DateTime sunsetDateTime = new DateTime(wObject.sys.sunset);
-            Console.WriteLine(sunsetDateTime.ToString());
+            DateTime sunriseDateTime = new DateTime(wObject.sys.sunrise);
+            Console.WriteLine("The sunset time is: " + sunsetDateTime.ToString());
+            Console.WriteLine("The sunrise time is: " + sunriseDateTime.ToString());
+
+            Console.WriteLine(wObject.weather[0].icon);
 
             Console.ReadKey();
     
