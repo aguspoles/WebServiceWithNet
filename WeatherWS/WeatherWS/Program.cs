@@ -15,7 +15,7 @@ namespace WeatherWS
     {
         static void Main(string[] args)
         {
-            WebRequest weatherInLondonReq = WebRequest.Create("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22");
+            WebRequest weatherInLondonReq = WebRequest.Create("https://api.openweathermap.org/data/2.5/weather?q=Madrid&appid=aa32db810ed545b6d4c4c08bdf31823f");
             weatherInLondonReq.Credentials = CredentialCache.DefaultCredentials;
             HttpWebResponse response = (HttpWebResponse)weatherInLondonReq.GetResponse();
             Console.WriteLine(response.StatusDescription);
@@ -24,20 +24,26 @@ namespace WeatherWS
             StreamReader reader = new StreamReader(dataStream);
   
             string json = reader.ReadToEnd();
+			string correctJason = json.Replace("base", "basek");
 
-            var ms = new MemoryStream(Encoding.Unicode.GetBytes(json));
+            var ms = new MemoryStream(Encoding.Unicode.GetBytes(correctJason));
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(WeatherObject));
             WeatherObject wObject = (WeatherObject)deserializer.ReadObject(ms);
 
-            Console.WriteLine("Hellow " + wObject.name + ": coordinates(" + 
-                wObject.coord.lat + "." + wObject.coord.lon + ")");
+            DateTime sunsetDateTime = new DateTime();
+            DateTime sunriseDateTime = new DateTime();
 
-            DateTime sunsetDateTime = new DateTime(wObject.sys.sunset);
-            DateTime sunriseDateTime = new DateTime(wObject.sys.sunrise);
+			DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+			sunriseDateTime = dtDateTime.AddSeconds(wObject.sys.sunrise).ToLocalTime();
+			//dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+			sunsetDateTime = dtDateTime.AddSeconds(wObject.sys.sunset).ToLocalTime();
+
+			Console.WriteLine("Hello " + wObject.name + ": coordinates(" + 
+                wObject.coord.lat + "." + wObject.coord.lon + ")");
             Console.WriteLine("The sunset time is: " + sunsetDateTime.ToString());
             Console.WriteLine("The sunrise time is: " + sunriseDateTime.ToString());
-
-            Console.WriteLine(wObject.weather[0].icon);
+			Console.WriteLine("base: " + wObject.basek);
+			Console.WriteLine(wObject.weather[0].icon);
 
             Console.ReadKey();
     
